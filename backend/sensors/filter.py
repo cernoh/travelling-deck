@@ -72,7 +72,7 @@ class OrientationFilter:
     """
 
     # Complementary gains: fraction of the accel correction applied per step.
-    ACCEL_GAIN = 0.05           # normal tracking
+    ACCEL_GAIN = 0.0212
     DEGRADED_ACCEL_GAIN = 0.005  # degraded: barely trust the accelerometer
     DEGRADED_GYRO_GAIN = 0.1    # degraded: heavy damping of gyro propagation
 
@@ -80,8 +80,8 @@ class OrientationFilter:
     # current up is ignored.  If the same direction persists (a real attitude
     # change, e.g. the Deck placed on a slope), it is trusted again after
     # TRUST_STEPS consecutive samples (ADR 0001, 0008).
-    JUMP_MAX_ANGLE = math.radians(20.0)
-    TRUST_STEPS = 100  # ~2 s at 50 Hz
+    JUMP_MAX_ANGLE = math.radians(45.0)
+    TRUST_STEPS = 100
 
     # Bounded prediction: total deviation from the last trusted orientation.
     DEGRADED_MAX_ANGLE = math.radians(20.0)
@@ -253,12 +253,6 @@ class OrientationFilter:
         flip either if the physical mounting differs.
         """
         ux, uy, uz = up
-        roll = 0.0
-        if ux * ux + uy * uy > 1e-9:
-            roll = math.degrees(math.atan2(-ux, uy))
-            if roll > 90.0:
-                roll -= 180.0
-            elif roll <= -90.0:
-                roll += 180.0
+        roll = math.degrees(math.atan2(ux, uz))
         pitch = math.degrees(math.atan2(-uy, uz))
         return roll, pitch

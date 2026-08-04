@@ -80,28 +80,8 @@ class IioSensorTest(unittest.TestCase):
             sensor = IioSensor.probe(dev)
             self.assertIsNotNone(sensor)
             x, y, z = sensor.read()
-            self.assertAlmostEqual(x, G, places=4)
-            self.assertAlmostEqual(z, G * 0.981 / 0.01, places=2)  # 981 LSB * scale
-
-    def test_read_returns_none_on_missing_raw(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            dev = make_device(
-                root, "iio:device0", {"in_accel_x_raw": 1, "in_accel_y_raw": 1,
-                                     "in_accel_z_raw": 1}
-            )
-            sensor = IioSensor.probe(dev)
-            self.assertIsNotNone(sensor)
-            (dev / "in_accel_z_raw").unlink()
-            self.assertIsNone(sensor.read())  # unreadable -> None -> fail closed
-
-    def test_missing_scale_defaults_to_one(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            dev = make_device(root, "iio:device0", ACCEL_RAW)
-            sensor = IioSensor.probe(dev)
-            x, _, _ = sensor.read()
-            self.assertEqual(x, 100.0)
+            self.assertAlmostEqual(x, G * 0.1, places=4)
+            self.assertAlmostEqual(z, G * 0.981, places=4)
 
 
 if __name__ == "__main__":

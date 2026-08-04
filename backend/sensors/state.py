@@ -266,7 +266,7 @@ class SensorPipeline:
 
     def _update_confidence_state(self, res) -> None:
         if self.state is State.ACTIVE:
-            if res.smoothed_confidence < DEGRADED_CONF:
+            if res.confidence < DEGRADED_CONF or res.smoothed_confidence < DEGRADED_CONF:
                 self._degraded_streak += 1
                 if self._degraded_streak >= DEGRADED_STEPS:
                     self.filter.begin_degraded()
@@ -275,7 +275,7 @@ class SensorPipeline:
                 self._degraded_streak = 0
         elif self.state is State.DEGRADED:
             self.metrics["degraded_steps"] += 1
-            if res.smoothed_confidence > RECOVERY_CONF:
+            if res.confidence > RECOVERY_CONF or res.smoothed_confidence > RECOVERY_CONF:
                 self._recovery_streak += 1
                 if self._recovery_streak >= RECOVERY_STEPS:
                     self._enter(State.ACTIVE)
