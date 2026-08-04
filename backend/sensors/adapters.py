@@ -1,5 +1,3 @@
-G = 9.80665
-
 """Sensor source adapters (ADR 0012).
 
 The pipeline talks to two :class:`SampleSource` objects (accelerometer and
@@ -19,6 +17,8 @@ hardware if read rate or timestamp jitter matters.
 """
 
 from __future__ import annotations
+G = 9.80665
+
 
 from pathlib import Path
 from typing import Optional, Protocol, Tuple

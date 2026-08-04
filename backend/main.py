@@ -127,7 +127,9 @@ class Plugin:
     async def get_state(self) -> dict:
         return self._frontend_state()
 
-    async def set_enabled(self, enabled: bool) -> dict:
+    async def set_enabled(self, enabled: bool | dict) -> dict:
+        if isinstance(enabled, dict):
+            enabled = enabled.get("enabled", False)
         self._pipeline.set_enabled(bool(enabled))
         return self._frontend_state()
 
@@ -138,7 +140,9 @@ class Plugin:
         self._pipeline.settings.set_notice_acknowledged(True)
         return self._frontend_state()
 
-    async def set_report_consent(self, consent: bool) -> dict:
+    async def set_report_consent(self, consent: bool | dict) -> dict:
+        if isinstance(consent, dict):
+            consent = consent.get("consent", False)
         self._pipeline.settings.set_report_consent(bool(consent))
         return self._frontend_state()
 
