@@ -98,21 +98,60 @@ class Plugin:
 
     # -- RPC methods --------------------------------------------------------
 
+    def _frontend_state(self) -> dict:
+        raw = self._pipeline.snapshot()
+        sensors = raw["sensors"]
+        horizon = None
+        if raw["state"] in {"active", "degraded"}:
+            horizon = {
+                "roll": max(-1.0, min(1.0, raw["orientation"]["roll_deg"] / 45.0)),
+                "pitch": max(-1.0, min(1.0, raw["orientation"]["pitch_deg"] / 45.0)),
+                "confidence": raw["confidence"],
+                "degraded": raw["degraded"],
+                "timestamp": int(time.time() * 1000),
+            }
+        return {
+            "enabled": raw["enabled"],
+            "status": raw["state"],
+            "sensors": {
+                "accelerometer": {"present": sensors["accelerometer"].get("present", False), "readable": "last_error" not in sensors["accelerometer"]},
+                "gyroscope": {"present": sensors["gyroscope"].get("present", False), "readable": "last_error" not in sensors["gyroscope"]},
+            },
+            "safety_latch": raw["state"] == "safety_disabled",
+            "disable_reason": (raw["safety"] or {}).get("reason") if raw["safety"] else None,
+            "notice_acknowledged": self._pipeline.settings.notice_acknowledged,
+            "report_consent": self._pipeline.settings.report_consent,
+            "horizon": horizon,
+        }
+
     async def get_state(self) -> dict:
-        return self._pipeline.snapshot()
+        return self._frontend_state()
 
     async def set_enabled(self, enabled: bool) -> dict:
-        return self._pipeline.set_enabled(bool(enabled))
+        self._pipeline.set_enabled(bool(enabled))
+        return self._frontend_state()
 
     async def get_diagnostics(self) -> dict:
         return self._pipeline.diagnostics()
 
-    async def set_notice_acknowledged(self, ack: bool) -> dict:
-        self._pipeline.settings.set_notice_acknowledged(bool(ack))
-        return self._pipeline.snapshot()
+    async def acknowledge_notice(self) -> dict:
+        self._pipeline.settings.set_notice_acknowledged(True)
+        return self._frontend_state()
 
-    async def get_settings(self) -> dict:
-        return {
-            "enabled": self._pipeline.settings.enabled,
-            "notice_acknowledged": self._pipeline.settings.notice_acknowledged,
-        }
+    async def set_report_consent(self, consent: bool) -> dict:
+        self._pipeline.settings.set_report_consent(bool(consent))
+        return self._frontend_state()
+
+    async def submit_comfort_report(self, report: dict) -> dict:
+        if not self._pipeline.settings.report_consent:
+            return {"submitted": False, "error": "report consent is required"}
+        try:
+            before = int(report["rating_before"])
+            after = int(report["rating_after"])
+        except (KeyError, TypeError, ValueError):
+            return {"submitted": False, "error": "ratings are required"}
+        if not 1 <= before <= 5 or not 1 <= after <= 5:
+            return {"submitted": False, "error": "ratings must be between 1 and 5"}
+        comment = str(report.get("comment", ""))[:500]
+        self._pipeline.settings.record_report({"rating_before": before, "rating_after": after, "comment": comment, "timestamp": int(time.time())})
+        return {"submitted": True}

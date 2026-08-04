@@ -1,3 +1,5 @@
+G = 9.80665
+
 """Sensor source adapters (ADR 0012).
 
 The pipeline talks to two :class:`SampleSource` objects (accelerometer and
