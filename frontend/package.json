@@ -1,0 +1,26 @@
+{
+  "name": "virtual-horizon-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Virtual Horizon Decky panel frontend (stable visual reference for kinetosis reduction)",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c",
+    "check": "tsc --noEmit",
+    "test": "node --test src/horizon.test.ts"
+  },
+  "dependencies": {
+    "@decky/api": "^1.1.3",
+    "@decky/ui": "^4.12.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@decky/rollup": "^1.0.2",
+    "@types/node": "^22.0.0",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "react-router": "^6.26.0",
+    "typescript": "^5.5.3"
+  }
+}
