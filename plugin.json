@@ -1,0 +1,10 @@
+{
+  "name": "Travelling Deck",
+  "author": "Travelling Deck contributors",
+  "flags": [],
+  "api_version": 1,
+  "publish": {
+    "tags": ["utility", "sensor"],
+    "description": "Virtual horizon panel for kinetosis reduction on Steam Deck. Sensor-derived; fullscreen overlay support is conditional and not guaranteed."
+  }
+}
