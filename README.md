@@ -26,28 +26,30 @@ Decky does not document an always-on-top compositor layer for every game mode. T
 
 ## Install
 
-Install Decky Loader on the Steam Deck before you install this plugin.
+This plugin is not in a Decky store. Install Decky Loader on the Steam Deck first.
 
-1. Download or clone this repository on the Steam Deck.
-2. Open a terminal in the repository directory.
-3. Build the frontend:
+1. Enable Developer Mode in Decky Loader settings.
+2. Download or clone this repository on the Steam Deck.
+3. Open a terminal in the repository directory.
+4. Build the frontend. Decky loads the panel from the generated `frontend/dist/` directory:
 
    ```sh
    cd frontend
    npm ci
    npm run build
+   cd ..
    ```
 
-4. Copy the repository directory to the Decky plugin directory:
+5. Copy the repository to the Decky plugin directory:
 
    ```sh
    sudo mkdir -p /home/deck/homebrew/plugins/travelling-deck
    sudo cp -r . /home/deck/homebrew/plugins/travelling-deck/
    ```
 
-5. Restart Decky Loader from its settings menu.
-6. Open the Decky menu and select Travelling Deck.
-7. Read the health notice, then enable the plugin when both sensors show as available.
+6. Restart the Decky plugin loader.
+7. Open the Decky menu and select Travelling Deck.
+8. Read the health notice, then enable the plugin when both sensors show as available.
 
 The current package is a development prototype. Decky overlay visibility above arbitrary games is not guaranteed. Remove the directory to uninstall the plugin:
 
