@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+      - "alpha-*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+
+      - name: Check frontend
+        working-directory: frontend
+        run: |
+          node --test --experimental-strip-types src/horizon.test.ts
+          npm exec -- tsc --noEmit
+
+      - name: Check backend
+        run: PYTHONPATH=backend:. python -m unittest discover -s backend/tests -t .
+
+      - name: Package plugin
+        run: |
+          mkdir -p release/travelling-deck
+          cp -r backend frontend/dist plugin.json release/travelling-deck/
+          cp README.md release/travelling-deck/
+          tar -C release -czf "travelling-deck-${GITHUB_REF_NAME}.tar.gz" travelling-deck
+          (cd release && zip -qr "../travelling-deck-${GITHUB_REF_NAME}.zip" travelling-deck)
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" "travelling-deck-${GITHUB_REF_NAME}.tar.gz" "travelling-deck-${GITHUB_REF_NAME}.zip" --verify-tag --generate-notes --title "$GITHUB_REF_NAME"
