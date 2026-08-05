@@ -24,6 +24,37 @@ The panel provides:
 
 Decky does not document an always-on-top compositor layer for every game mode. The prototype does not claim support for arbitrary fullscreen games. Test the target Deck, game, display mode, input focus, and gamescope path before release.
 
+## Install
+
+Install Decky Loader on the Steam Deck before you install this plugin.
+
+1. Download or clone this repository on the Steam Deck.
+2. Open a terminal in the repository directory.
+3. Build the frontend:
+
+   ```sh
+   cd frontend
+   npm ci
+   npm run build
+   ```
+
+4. Copy the repository directory to the Decky plugin directory:
+
+   ```sh
+   sudo mkdir -p /home/deck/homebrew/plugins/travelling-deck
+   sudo cp -r . /home/deck/homebrew/plugins/travelling-deck/
+   ```
+
+5. Restart Decky Loader from its settings menu.
+6. Open the Decky menu and select Travelling Deck.
+7. Read the health notice, then enable the plugin when both sensors show as available.
+
+The current package is a development prototype. Decky overlay visibility above arbitrary games is not guaranteed. Remove the directory to uninstall the plugin:
+
+```sh
+sudo rm -rf /home/deck/homebrew/plugins/travelling-deck
+```
+
 ## Development
 
 Enter the Nix development shell:
