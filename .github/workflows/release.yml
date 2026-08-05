@@ -48,8 +48,12 @@ jobs:
       - name: Package plugin
         run: |
           mkdir -p release/travelling-deck
-          cp -r backend frontend/dist plugin.json release/travelling-deck/
-          cp README.md release/travelling-deck/
+          cp -r backend release/travelling-deck/
+          cp -r frontend/dist release/travelling-deck/dist
+          cp plugin.json frontend/package.json README.md release/travelling-deck/
+          mv release/travelling-deck/backend/main.py release/travelling-deck/main.py
+          mv release/travelling-deck/backend/sensors release/travelling-deck/sensors
+          rm -rf release/travelling-deck/backend
           tar -C release -czf "travelling-deck-${GITHUB_REF_NAME}.tar.gz" travelling-deck
           (cd release && zip -qr "../travelling-deck-${GITHUB_REF_NAME}.zip" travelling-deck)
 
